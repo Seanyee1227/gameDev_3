@@ -13,6 +13,11 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
+        Move();
+    }
+
+    private void Move()
+    {
         _hAxis = Input.GetAxisRaw("Horizontal");
         _vAxis = Input.GetAxisRaw("Vertical");
 
