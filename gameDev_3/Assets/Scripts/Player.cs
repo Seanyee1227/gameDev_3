@@ -10,8 +10,8 @@ public class Player : MonoBehaviour
     private float _vAxis;
     private bool _isJump = false;
 
-    private Vector3 _moveVec;
-    private Rigidbody _rb;
+    Vector3 _moveVec;
+    Rigidbody _rb;
 
     private void Start()
     {
