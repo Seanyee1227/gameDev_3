@@ -1,9 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Player : MonoBehaviour
 {
+    private CameraController Camera;
+
     public float speed;
     public float jumpForce;
     private float _hAxis;
@@ -16,6 +19,7 @@ public class Player : MonoBehaviour
     private void Start()
     {
         _rb = GetComponent<Rigidbody>();
+        Camera = GetComponent<CameraController>();
     }
 
     private void Update()
@@ -28,6 +32,8 @@ public class Player : MonoBehaviour
     {
         _hAxis = Input.GetAxisRaw("Horizontal"); 
         _vAxis = Input.GetAxisRaw("Vertical");
+
+      
 
         _moveVec = new Vector3(_hAxis, 0, _vAxis).normalized;
 
@@ -50,4 +56,6 @@ public class Player : MonoBehaviour
             _isJump = false;
         }
     }
+
+    
 }
