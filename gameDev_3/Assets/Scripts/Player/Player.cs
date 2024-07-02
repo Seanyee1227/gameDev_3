@@ -15,11 +15,13 @@ public class Player : MonoBehaviour
 
     Vector3 _moveVec;
     Rigidbody _rb;
+    private Transform _cameraTransform;
 
     private void Start()
     {
         _rb = GetComponent<Rigidbody>();
         Camera = GetComponent<CameraController>();
+       
     }
 
     private void Update()
