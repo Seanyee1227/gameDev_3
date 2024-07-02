@@ -5,22 +5,22 @@ using UnityEngine.UIElements;
 
 public class Player : MonoBehaviour
 {
-    private CameraController Camera;
+    private CameraController _Camera;
 
     public float speed;
     public float jumpForce;
     private float _hAxis;
     private float _vAxis;
     private bool _isJump = false;
+    
 
     Vector3 _moveVec;
     Rigidbody _rb;
-    private Transform _cameraTransform;
 
     private void Start()
     {
         _rb = GetComponent<Rigidbody>();
-        Camera = GetComponent<CameraController>();
+        _Camera = GetComponent<CameraController>();
        
     }
 
@@ -35,11 +35,10 @@ public class Player : MonoBehaviour
         _hAxis = Input.GetAxisRaw("Horizontal"); 
         _vAxis = Input.GetAxisRaw("Vertical");
 
-      
-
         _moveVec = new Vector3(_hAxis, 0, _vAxis).normalized;
 
         transform.position += _moveVec * speed * Time.deltaTime;
+        transform.LookAt(transform.position);
     }
 
     private void Jump()
