@@ -1,11 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class Player : MonoBehaviour
 {
-    private CameraController _Camera;
+    private CameraRotate _cameraRotate;
 
     public float speed;
     public float jumpForce;
@@ -13,21 +10,26 @@ public class Player : MonoBehaviour
     private float _vAxis;
     private bool _isJump = false;
     
-
     Vector3 _moveVec;
     Rigidbody _rb;
 
+    private void Awake()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
+
     private void Start()
     {
-        _rb = GetComponent<Rigidbody>();
-        _Camera = GetComponent<CameraController>();
-       
+        _rb = GetComponent<Rigidbody>();    
+        _cameraRotate = GetComponent<CameraRotate>();   
     }
 
     private void Update()
     {
         Move();
         Jump();
+        Rotate();
     }
 
     private void Move()
@@ -38,7 +40,7 @@ public class Player : MonoBehaviour
         _moveVec = new Vector3(_hAxis, 0, _vAxis).normalized;
 
         transform.position += _moveVec * speed * Time.deltaTime;
-        transform.LookAt(transform.position);
+        
     }
 
     private void Jump()
@@ -58,5 +60,11 @@ public class Player : MonoBehaviour
         }
     }
 
-    
+    private void Rotate()
+    {
+        float _mouseX = Input.GetAxisRaw("Mouse X");
+        float _mouseY = Input.GetAxisRaw("Mouse Y");
+
+        _cameraRotate.Rotate(_mouseX, _mouseY);
+    }
 }
