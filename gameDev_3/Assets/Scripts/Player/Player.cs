@@ -27,20 +27,24 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        Move();
         Jump();
         Rotate();
     }
 
-    private void Move()
+    private void FixedUpdate()
     {
+        Move();
+    }
+
+    private void Move()
+    {   
         _hAxis = Input.GetAxisRaw("Horizontal"); 
         _vAxis = Input.GetAxisRaw("Vertical");
 
-        _moveVec = new Vector3(_hAxis, 0, _vAxis).normalized;
+        _moveVec = (transform.forward * _vAxis + transform.right * _hAxis).normalized;
 
-        transform.position += _moveVec * speed * Time.deltaTime;
-        
+        Vector3 _movePosition = transform.position + _moveVec * speed * Time.deltaTime;
+        _rb.MovePosition(_movePosition);
     }
 
     private void Jump()

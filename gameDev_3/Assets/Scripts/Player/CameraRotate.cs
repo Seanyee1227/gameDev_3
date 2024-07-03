@@ -1,16 +1,11 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem.Processors;
-using UnityEngine.UIElements;
 
 public class CameraRotate : MonoBehaviour
 {
     [SerializeField]
-    private float _Xspeed = 5;
+    private float _Xspeed = 3f;
     [SerializeField] 
-    private float _Yspeed = 3;
+    private float _Yspeed = 3f;
 
     private float _limitMinX = -80f;
     private float _limitMaxX = 50f;
