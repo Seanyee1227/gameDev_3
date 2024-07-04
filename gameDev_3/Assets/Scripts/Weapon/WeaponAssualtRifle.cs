@@ -1,40 +1,104 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class WeaponAssualtRifle : MonoBehaviour
 {
+    [Header("Fire Effects")]
+    [SerializeField]
+    private GameObject _flashEffect; // 사격 이펙트
+
     [Header("Audio Clips")]
     [SerializeField] 
     private AudioClip audioClipTakeOutWeapon; // 장착 사운드
-    private AudioSource audioSource; // 사운드 재생
+    [SerializeField]
+    private AudioClip audioClipFire; // 사격 사운드
+    
 
     [Header("Weapon Setting")]
     [SerializeField]
-    private WeaponSetting weaponSetting;
+    private WeaponSetting _weaponSetting; // 무기 설정
 
-    private float _lastAttackTime = 0f;
+    private float _lastAttackTime = 0f; // 마지막 발사 시간 확인
 
     private AudioSource _audioSource;
     private PlayerAnimation _anim;
 
     private void Awake()
     {
-        audioSource = GetComponent<AudioSource>();
-        _anim = GetComponent<PlayerAnimation>();
+        _audioSource = GetComponent<AudioSource>();
+        _anim = GetComponentInParent<PlayerAnimation>();
     }
 
     private void OnEnable()
     {
         PlaySound(audioClipTakeOutWeapon);
+        _flashEffect.SetActive(false);
+    }
+
+    public void StartWeaponAction(int _type = 0)
+    {
+        if (_type == 0)
+        {
+            if (_weaponSetting.isAutoAttack == true)
+            {
+                StartCoroutine("OnAttackLoop");
+            }
+            else
+            {
+                OnAttack();
+            }
+        }
+    }
+
+    public void StopWeaponAction(int _type = 0)
+    {
+        if (_type == 0)
+        {
+            StopCoroutine("OnAttackLoop");
+        }
+    }
+
+    private IEnumerator OnAttackLoop()
+    {
+        while (true)
+        {
+            OnAttack();
+            yield return null;
+        }
+    }
+
+    public void OnAttack()
+    {
+        if (Time.time - _lastAttackTime > _weaponSetting.attackRate)
+        {
+            // 달릴 때 공격 X
+            if (_anim.MoveSpeed > 0.5f)
+            {
+                return;
+            }
+
+            // 공격 주기가 되어야 공격할 수 있도록 지금 시간 저장
+            _lastAttackTime = Time.time;
+
+            _anim.Play("Fire", -1, 0);
+
+            StartCoroutine("FlashEffect");
+
+            PlaySound(audioClipFire);
+        }
+    }
+
+    private IEnumerator FlashEffect()
+    {
+        _flashEffect.SetActive(true);
+        yield return new WaitForSeconds(_weaponSetting.attackRate * 0.3f);
+        _flashEffect.SetActive(false);
     }
 
     private void PlaySound(AudioClip clip)
     {
-        audioSource.Stop();
-        audioSource.clip = clip;
-        audioSource.Play();
+        _audioSource.Stop();
+        _audioSource.clip = clip;
+        _audioSource.Play();
     }
-
-
 }

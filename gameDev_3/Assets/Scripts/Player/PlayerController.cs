@@ -6,21 +6,22 @@ public class PlayerController : MonoBehaviour
 {
     [Header("Input KeyCode")]
     [SerializeField]
-    private KeyCode _keyCodeRun = KeyCode.LeftShift;
+    private KeyCode _keyCodeRun = KeyCode.LeftShift; // 달리기 키
     [SerializeField]
-    private KeyCode _keyCodeJump = KeyCode.Space;
+    private KeyCode _keyCodeJump = KeyCode.Space; // 점프 키
 
     [Header("Audio Clip")]
     [SerializeField]
-    private AudioClip _audioClipWalk;
+    private AudioClip _audioClipWalk; //걷기 사운드
     [SerializeField]
-    private AudioClip _audioClipRun;
+    private AudioClip _audioClipRun; // 달리기 사운드
 
     private CameraRotate _camreraRotate;
     private PlayerMove _playerMove;
     private Status _status;
     private PlayerAnimation _anim;
     private AudioSource _audioSource;
+    private WeaponAssualtRifle _weapon;
 
     private void Awake()
     {
@@ -30,8 +31,9 @@ public class PlayerController : MonoBehaviour
         _camreraRotate = GetComponent<CameraRotate>();
         _playerMove = GetComponent<PlayerMove>();   
         _status = GetComponent<Status>();
-        _anim = GetComponent<PlayerAnimation>();
+        _anim = GetComponent<PlayerAnimation>();    
         _audioSource = GetComponent<AudioSource>();
+        _weapon = GetComponentInChildren<WeaponAssualtRifle>();
     }
 
     private void Update()
@@ -39,6 +41,7 @@ public class PlayerController : MonoBehaviour
         UpdateRotate();
         UpdateMove();
         UpdateJump();
+        UpdateWeaponAction();
     }
 
     private void UpdateRotate()
@@ -86,6 +89,18 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(_keyCodeJump))
         {
             _playerMove.Jump();
+        }
+    }
+
+    private void UpdateWeaponAction()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            _weapon.StartWeaponAction();
+        }
+        else if (Input.GetMouseButtonUp(0))
+        {
+            _weapon.StopWeaponAction();
         }
     }
 }
