@@ -4,8 +4,13 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("Input KeyCode")]
+    [SerializeField]
+    private KeyCode _keyCodeRun = KeyCode.LeftShift;
+
     private CameraRotate _camreraRotate;
     private PlayerMove _playerMove;
+    private Status _status;
 
     private void Awake()
     {
@@ -14,6 +19,7 @@ public class PlayerController : MonoBehaviour
 
         _camreraRotate = GetComponent<CameraRotate>();
         _playerMove = GetComponent<PlayerMove>();   
+        _status = GetComponent<Status>();
     }
 
     private void Update()
@@ -35,6 +41,11 @@ public class PlayerController : MonoBehaviour
         float _hAxis = Input.GetAxisRaw("Horizontal");
         float _vAxis = Input.GetAxisRaw("Vertical");
 
+        if (_vAxis != 0 || _hAxis != 0 )
+        {
+            bool _isRun = Input.GetKey(_keyCodeRun);
+            _playerMove.MoveSpeed = _isRun == true ? _status.RunSpeed : _status.WalkSpeed;
+        }
         _playerMove.MoveTo(new Vector3(_hAxis, 0, _vAxis));
     }
 }

@@ -11,6 +11,12 @@ public class PlayerMove : MonoBehaviour
 
     private CharacterController _characterController;
 
+    public float MoveSpeed
+    {
+        set => _moveSpeed = Mathf.Max(0, value);
+        get => _moveSpeed;
+    }
+
     private void Awake()
     {
         _characterController = GetComponent<CharacterController>();
