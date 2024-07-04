@@ -25,4 +25,6 @@ public class WeaponAssualtRifle : MonoBehaviour
         audioSource.clip = clip;
         audioSource.Play();
     }
+
+
 }
