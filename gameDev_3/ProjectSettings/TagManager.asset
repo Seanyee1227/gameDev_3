@@ -16,6 +16,7 @@ TagManager:
   - Wood (Static)
   - Dirt (Static)
   - Wood
+  - Ground
   layers:
   - Default
   - TransparentFX
@@ -23,16 +24,16 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
+  - Player
+  - Casing
   - Wall
-  - First Person View
-  - Character
-  - Post Processing
-  - Post Processing Weapon
-  - Post Processing Scope
-  - Invisible Wall
-  - Projectile
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
   - 
   - 
   - 

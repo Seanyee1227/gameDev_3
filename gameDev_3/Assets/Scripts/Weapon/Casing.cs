@@ -5,9 +5,9 @@ using UnityEngine;
 public class Casing : MonoBehaviour
 {
     [SerializeField]
-    private float deactiveTime = 5.0f;
+    private float _deactiveTime = 5.0f;
     [SerializeField]
-    private float casingSpin = 1.0f;
+    private float _casingSpin = 1.0f;
     [SerializeField]
     private AudioClip[] _audioClips;
 
@@ -15,7 +15,7 @@ public class Casing : MonoBehaviour
     private AudioSource _audioSource;
     private MemoryPool _memoryPool;
 
-    public void SetUp(MemoryPool _pool, Vector3 _dir)
+    public void Setup(MemoryPool _pool, Vector3 _dir)
     {
         _rb = GetComponent<Rigidbody>();
         _audioSource = GetComponent<AudioSource>();
@@ -23,9 +23,9 @@ public class Casing : MonoBehaviour
 
         // 탄피의 이동 속력, 회전 속력
         _rb.velocity = new Vector3(_dir.x, 1.0f, _dir.z);
-        _rb.angularVelocity = new Vector3(Random.Range(-casingSpin, casingSpin),
-                                          Random.Range(-casingSpin, casingSpin),
-                                          Random.Range(-casingSpin, casingSpin));
+        _rb.angularVelocity = new Vector3(Random.Range(-_casingSpin, _casingSpin),
+                                          Random.Range(-_casingSpin, _casingSpin),
+                                          Random.Range(-_casingSpin, _casingSpin));
 
         StartCoroutine("DeactiveAfterTime");
     }
@@ -40,7 +40,7 @@ public class Casing : MonoBehaviour
 
     private IEnumerator DeactiveAfterTime()
     {
-        yield return new WaitForSeconds(deactiveTime);
+        yield return new WaitForSeconds(_deactiveTime);
 
         _memoryPool.DeactivePoolItem(this.gameObject);
     }

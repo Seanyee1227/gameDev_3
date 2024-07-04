@@ -7,12 +7,16 @@ public class WeaponAssualtRifle : MonoBehaviour
     [SerializeField]
     private GameObject _flashEffect; // 사격 이펙트
 
+    [Header("Spawn Points")]
+    [SerializeField]
+    private Transform _casingSpawnPoint; // 탄피 생성 위치
+
     [Header("Audio Clips")]
-    [SerializeField] 
+    [SerializeField]
     private AudioClip audioClipTakeOutWeapon; // 장착 사운드
     [SerializeField]
     private AudioClip audioClipFire; // 사격 사운드
-    
+
 
     [Header("Weapon Setting")]
     [SerializeField]
@@ -22,11 +26,13 @@ public class WeaponAssualtRifle : MonoBehaviour
 
     private AudioSource _audioSource;
     private PlayerAnimation _anim;
+    private CasingMemoryPool _memoryPool;
 
     private void Awake()
     {
         _audioSource = GetComponent<AudioSource>();
         _anim = GetComponentInParent<PlayerAnimation>();
+        _memoryPool = GetComponent<CasingMemoryPool>();
     }
 
     private void OnEnable()
@@ -79,12 +85,14 @@ public class WeaponAssualtRifle : MonoBehaviour
 
             // 공격 주기가 되어야 공격할 수 있도록 지금 시간 저장
             _lastAttackTime = Time.time;
-
+            // 총기 애니매이션 재생
             _anim.Play("Fire", -1, 0);
-
+            // 사격 이펙트 재생
             StartCoroutine("FlashEffect");
-
+            // 사격 사운드 재생
             PlaySound(audioClipFire);
+            // 탄피 생성
+            _memoryPool.SpawnCasing(_casingSpawnPoint.position, transform.right);
         }
     }
 

@@ -12,7 +12,7 @@ public class MemoryPool
         public GameObject gameObject;
     }
 
-    private int _increaseCount; // 추가 생성되는 오브젝트의 개수
+    private int _increaseCount = 5; // 추가 생성되는 오브젝트의 개수
     private int _maxCount; // 현재 리스트에 들어있는 오브젝트 개수
     private int _activeCount; // 현재 게임에 활성화되어 있는 오브젝트 개수
 
