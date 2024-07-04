@@ -9,9 +9,19 @@ public class WeaponAssualtRifle : MonoBehaviour
     private AudioClip audioClipTakeOutWeapon; // 장착 사운드
     private AudioSource audioSource; // 사운드 재생
 
+    [Header("Weapon Setting")]
+    [SerializeField]
+    private WeaponSetting weaponSetting;
+
+    private float _lastAttackTime = 0f;
+
+    private AudioSource _audioSource;
+    private PlayerAnimation _anim;
+
     private void Awake()
     {
         audioSource = GetComponent<AudioSource>();
+        _anim = GetComponent<PlayerAnimation>();
     }
 
     private void OnEnable()

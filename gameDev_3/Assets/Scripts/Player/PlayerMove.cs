@@ -9,6 +9,11 @@ public class PlayerMove : MonoBehaviour
     private float _moveSpeed;
     private Vector3 _moveForce;
 
+    [SerializeField]
+    private float _jumpForce;
+    [SerializeField]
+    private float _gravity;
+
     private CharacterController _characterController;
 
     public float MoveSpeed
@@ -24,6 +29,11 @@ public class PlayerMove : MonoBehaviour
 
     private void Update()
     {
+        if (!_characterController.isGrounded)
+        {
+            _moveForce.y += _gravity * Time.deltaTime;
+        }
+
         _characterController.Move(_moveForce * Time.deltaTime);
     }
 
@@ -32,5 +42,13 @@ public class PlayerMove : MonoBehaviour
         _dir = transform.rotation * new Vector3(_dir.x, 0, _dir.z);
 
         _moveForce = new Vector3(_dir.x * _moveSpeed, _moveForce.y, _dir.z * _moveSpeed);
+    }
+
+    public void Jump()
+    {
+        if (_characterController.isGrounded)
+        {
+            _moveForce.y = _jumpForce;
+        }
     }
 }

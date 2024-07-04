@@ -7,10 +7,20 @@ public class PlayerController : MonoBehaviour
     [Header("Input KeyCode")]
     [SerializeField]
     private KeyCode _keyCodeRun = KeyCode.LeftShift;
+    [SerializeField]
+    private KeyCode _keyCodeJump = KeyCode.Space;
+
+    [Header("Audio Clip")]
+    [SerializeField]
+    private AudioClip _audioClipWalk;
+    [SerializeField]
+    private AudioClip _audioClipRun;
 
     private CameraRotate _camreraRotate;
     private PlayerMove _playerMove;
     private Status _status;
+    private PlayerAnimation _anim;
+    private AudioSource _audioSource;
 
     private void Awake()
     {
@@ -20,12 +30,15 @@ public class PlayerController : MonoBehaviour
         _camreraRotate = GetComponent<CameraRotate>();
         _playerMove = GetComponent<PlayerMove>();   
         _status = GetComponent<Status>();
+        _anim = GetComponent<PlayerAnimation>();
+        _audioSource = GetComponent<AudioSource>();
     }
 
     private void Update()
     {
         UpdateRotate();
         UpdateMove();
+        UpdateJump();
     }
 
     private void UpdateRotate()
@@ -41,11 +54,38 @@ public class PlayerController : MonoBehaviour
         float _hAxis = Input.GetAxisRaw("Horizontal");
         float _vAxis = Input.GetAxisRaw("Vertical");
 
+        // 이동 (걷기 or 달리기)
         if (_vAxis != 0 || _hAxis != 0 )
         {
             bool _isRun = Input.GetKey(_keyCodeRun);
             _playerMove.MoveSpeed = _isRun == true ? _status.RunSpeed : _status.WalkSpeed;
+            _anim.MoveSpeed = _isRun == true ? 1 : 0.5f;
+            _audioSource.clip = _isRun == true ? _audioClipRun : _audioClipWalk;
+
+            if (_audioSource.isPlaying == false )
+            {
+                _audioSource.loop = true;
+                _audioSource.Play();
+            }
+        }
+        else
+        {
+            _playerMove.MoveSpeed = 0;
+            _anim.MoveSpeed = 0;
+
+            if (_audioSource.isPlaying == true)
+            {
+                _audioSource.Stop();
+            }
         }
         _playerMove.MoveTo(new Vector3(_hAxis, 0, _vAxis));
+    }
+
+    private void UpdateJump()
+    {
+        if (Input.GetKeyDown(_keyCodeJump))
+        {
+            _playerMove.Jump();
+        }
     }
 }
