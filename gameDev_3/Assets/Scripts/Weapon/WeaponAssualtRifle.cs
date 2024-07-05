@@ -3,11 +3,15 @@ using UnityEngine;
 
 [System.Serializable]
 public class AmmoEvent : UnityEngine.Events.UnityEvent<int, int> { }
+[System.Serializable]
+public class MagazinEvent : UnityEngine.Events.UnityEvent<int> { }
 
 public class WeaponAssualtRifle : MonoBehaviour
 {
     [HideInInspector]
     public AmmoEvent onAmmoEvent = new AmmoEvent();
+    [HideInInspector]
+    public MagazinEvent onMagazinEvent = new MagazinEvent();
 
     [Header("Fire Effects")]
     [SerializeField]
@@ -31,12 +35,16 @@ public class WeaponAssualtRifle : MonoBehaviour
     private WeaponSetting _weaponSetting; // 무기 설정
 
     private float _lastAttackTime = 0f; // 마지막 발사 시간 확인
+    private bool _isReload = false; // 재장전 확인
 
     private AudioSource _audioSource;
     private PlayerAnimation _anim;
     private CasingMemoryPool _memoryPool;
 
-    public WeaponName weaponName => _weaponSetting.weaponName; 
+    // 외부에서 필요한 정보를 열람하기 위해 정의한 프로퍼티
+    public WeaponName weaponName => _weaponSetting.weaponName;
+    public int currentMagazine => _weaponSetting.currentMagazin;
+    public int maxMagazine => _weaponSetting.maxMagazin;
 
     private void Awake()
     {
@@ -46,6 +54,9 @@ public class WeaponAssualtRifle : MonoBehaviour
 
         // 탄약을 최대로 초기화
         _weaponSetting.currentAmmo = _weaponSetting.maxAmmo;
+
+        // 탄창 수를 최대로 초기화
+        _weaponSetting.currentMagazin = _weaponSetting.maxMagazin;
     }
 
     private void OnEnable()
@@ -53,11 +64,20 @@ public class WeaponAssualtRifle : MonoBehaviour
         PlaySound(_audioClipTakeOutWeapon);
         _flashEffect.SetActive(false);
 
+        // 무기가 활성화 될 때 탄 수 갱신
         onAmmoEvent.Invoke(_weaponSetting.currentAmmo, _weaponSetting.maxAmmo);
+
+        // 무기가 활성화 될 때 탄창 수 갱신
+        onMagazinEvent.Invoke(_weaponSetting.currentMagazin);
     }
 
     public void StartWeaponAction(int _type = 0)
     {
+        if (_isReload == true)
+        {
+            return;
+        }
+
         if (_type == 0)
         {
             if (_weaponSetting.isAutoAttack == true)
@@ -84,6 +104,29 @@ public class WeaponAssualtRifle : MonoBehaviour
         while (true)
         {
             OnAttack();
+            yield return null;
+        }
+    }
+
+    private IEnumerator OnReload()
+    {
+        _isReload = true;
+
+        _anim.OnReload();
+        PlaySound(_audioClipReload);
+
+        while (true)
+        {
+            if (_audioSource.isPlaying == false && _anim.CurrentAnimation("Movement"))
+            {
+                _isReload = false;
+
+                // 재장전시 현재 탄수를 최대로 변경하고, UI 업데이트
+                _weaponSetting.currentAmmo = _weaponSetting.maxAmmo;
+                onAmmoEvent.Invoke(_weaponSetting.currentAmmo, _weaponSetting.maxAmmo);
+
+                yield break;
+            }
             yield return null;
         }
     }
@@ -129,6 +172,18 @@ public class WeaponAssualtRifle : MonoBehaviour
         _flashEffect.SetActive(true);
         yield return new WaitForSeconds(_weaponSetting.attackRate * 0.3f);
         _flashEffect.SetActive(false);
+    }
+
+    public void StartReload()
+    {
+        if (_isReload == true)
+        {
+            return;
+        }
+
+        StopWeaponAction();
+
+        StartCoroutine("OnReload");
     }
 
     private void PlaySound(AudioClip clip)

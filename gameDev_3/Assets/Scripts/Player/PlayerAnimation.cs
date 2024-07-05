@@ -21,4 +21,14 @@ public class PlayerAnimation : MonoBehaviour
     {
         _anim.Play(_stateName, _layer, _normalizedTime);
     }
+
+    public void OnReload()
+    {
+        _anim.SetTrigger("OnReload");
+    }
+
+    public bool CurrentAnimation(string _name)
+    {
+        return _anim.GetCurrentAnimatorStateInfo(0).IsName(_name);
+    }
 }
