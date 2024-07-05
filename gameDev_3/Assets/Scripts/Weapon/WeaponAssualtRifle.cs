@@ -121,6 +121,10 @@ public class WeaponAssualtRifle : MonoBehaviour
             {
                 _isReload = false;
 
+                // 현재 탄창 수를 감소 시키고, UI 업데이드
+                _weaponSetting.currentMagazin--;
+                onMagazinEvent.Invoke(_weaponSetting.currentMagazin);
+
                 // 재장전시 현재 탄수를 최대로 변경하고, UI 업데이트
                 _weaponSetting.currentAmmo = _weaponSetting.maxAmmo;
                 onAmmoEvent.Invoke(_weaponSetting.currentAmmo, _weaponSetting.maxAmmo);
@@ -176,7 +180,7 @@ public class WeaponAssualtRifle : MonoBehaviour
 
     public void StartReload()
     {
-        if (_isReload == true)
+        if (_isReload == true || _weaponSetting.currentMagazin <= 0)
         {
             return;
         }

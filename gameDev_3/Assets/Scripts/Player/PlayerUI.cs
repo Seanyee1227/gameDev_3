@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
 using TMPro;
+using Unity.VisualScripting;
 
 public class PlayerUI : MonoBehaviour
 {
@@ -18,13 +20,22 @@ public class PlayerUI : MonoBehaviour
 
     [Header("Ammo")]
     [SerializeField]
-    private TextMeshProUGUI _Ammo;
+    private TextMeshProUGUI _Ammo; // ÅºÃ¢ ¼ö
+
+    [Header("Magazine")]
+    [SerializeField]
+    private GameObject _magazinPrefab; // Åº¾à ÇÁ¸®ÆÕ
+    [SerializeField]
+    private Transform _magazineParnel; // Åº¾à UI ÆÐ³Î
+    private List<GameObject> _magazineList; // Åº¾à UI ¸®½ºÆ®
 
     private void Awake()
     {
         SetupWeapon();
+        SetupMagazine();
 
         _weapon.onAmmoEvent.AddListener(UpadateAmmoUI);
+        _weapon.onMagazinEvent.AddListener(UpdateMagazineUI);
     }
 
     private void SetupWeapon()
@@ -33,8 +44,40 @@ public class PlayerUI : MonoBehaviour
         _weaponIcon.sprite = _weponIconSprite[(int)_weapon.weaponName];
     }
 
+    private void SetupMagazine()
+    {
+        _magazineList = new List<GameObject>();
+
+        for (int i = 0; i < _weapon.currentMagazine; ++i)
+        {
+            GameObject _clone = Instantiate(_magazinPrefab);
+            _clone.transform.SetParent(_magazineParnel);
+            _clone.SetActive(false);
+
+            _magazineList.Add(_clone);
+        }
+
+        for (int i = 0; i < _weapon.currentMagazine; ++i)
+        {
+            _magazineList[i].SetActive(true);
+        }
+    }
+
+    private void UpdateMagazineUI(int _currentMagazine)
+    {
+        // Áö±Ý Åº¾à ¼ö ¸¸Å­ È°¼ºÇÏ
+        for (int i = 0; i < _magazineList.Count; ++i)
+        {
+            _magazineList[i].SetActive(false);
+        }
+        for (int i = 0; i < _currentMagazine; ++i)
+        {
+            _magazineList[i].SetActive(true);
+        }
+    }
+
     private void UpadateAmmoUI(int _currntAmmo, int _maxAmmo)
     {
-        _Ammo.text = $"<size=40>{_currntAmmo}/</size>{_maxAmmo}";
+        _Ammo.text = $"<size=40>{_currntAmmo}/</size>{_maxAmmo}";   
     }
 }
