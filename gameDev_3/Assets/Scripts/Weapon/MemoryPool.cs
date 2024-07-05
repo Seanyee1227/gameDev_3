@@ -1,6 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class MemoryPool
@@ -12,7 +10,7 @@ public class MemoryPool
         public GameObject gameObject;
     }
 
-    private int _increaseCount = 5; // 추가 생성되는 오브젝트의 개수
+    private int _increaseCount = 30; // 추가 생성되는 오브젝트의 개수
     private int _maxCount; // 현재 리스트에 들어있는 오브젝트 개수
     private int _activeCount; // 현재 게임에 활성화되어 있는 오브젝트 개수
 
@@ -86,10 +84,12 @@ public class MemoryPool
 
             if (_poolItem.isActive == false)
             {
+                _activeCount++;
+
                 _poolItem.isActive = true;
                 _poolItem.gameObject.SetActive(true);
 
-                return _poolItem.gameObject;
+                return _poolItem.gameObject;    
             }
         }
         return null;
