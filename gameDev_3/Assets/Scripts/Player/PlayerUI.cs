@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
 using TMPro;
-using Unity.VisualScripting;
 
 public class PlayerUI : MonoBehaviour
 {
@@ -40,15 +39,15 @@ public class PlayerUI : MonoBehaviour
 
     private void SetupWeapon()
     {
-        _weaponName.text = _weapon.weaponName.ToString();
-        _weaponIcon.sprite = _weponIconSprite[(int)_weapon.weaponName];
+        _weaponName.text = _weapon.WeaponName.ToString();
+        _weaponIcon.sprite = _weponIconSprite[(int)_weapon.WeaponName];
     }
 
     private void SetupMagazine()
     {
         _magazineList = new List<GameObject>();
 
-        for (int i = 0; i < _weapon.currentMagazine; ++i)
+        for (int i = 0; i < _weapon.CurrentMagazine; ++i)
         {
             GameObject _clone = Instantiate(_magazinPrefab);
             _clone.transform.SetParent(_magazineParnel);
@@ -57,7 +56,7 @@ public class PlayerUI : MonoBehaviour
             _magazineList.Add(_clone);
         }
 
-        for (int i = 0; i < _weapon.currentMagazine; ++i)
+        for (int i = 0; i < _weapon.CurrentMagazine; ++i)
         {
             _magazineList[i].SetActive(true);
         }
@@ -65,14 +64,14 @@ public class PlayerUI : MonoBehaviour
 
     private void UpdateMagazineUI(int _currentMagazine)
     {
-        // 지금 탄약 수 만큼 활성하
+        // 지금 탄약 수 만큼 활성화
         for (int i = 0; i < _magazineList.Count; ++i)
         {
             _magazineList[i].SetActive(false);
         }
         for (int i = 0; i < _currentMagazine; ++i)
         {
-            _magazineList[i].SetActive(true);
+            _magazineList[i].SetActive(true);   
         }
     }
 
