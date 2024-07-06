@@ -68,7 +68,7 @@ public class WeaponAssualtRifle : MonoBehaviour
         onAmmoEvent.Invoke(_weaponSetting.currentAmmo, _weaponSetting.maxAmmo);
 
         // 무기가 활성화 될 때 탄창 수 갱신
-        //onMagazinEvent.Invoke(_weaponSetting.currentMagazin);  
+        onMagazinEvent.Invoke(_weaponSetting.currentMagazin);  
     }
 
     public void StartWeaponAction(int _type = 0)

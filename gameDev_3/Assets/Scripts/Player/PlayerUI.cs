@@ -26,6 +26,7 @@ public class PlayerUI : MonoBehaviour
     private GameObject _magazinPrefab; // Åº¾à ÇÁ¸®ÆÕ
     [SerializeField]
     private Transform _magazineParnel; // Åº¾à UI ÆÐ³Î
+
     private List<GameObject> _magazineList; // Åº¾à UI ¸®½ºÆ®
 
     private void Awake()
@@ -34,7 +35,7 @@ public class PlayerUI : MonoBehaviour
         SetupMagazine();
 
         _weapon.onAmmoEvent.AddListener(UpadateAmmoUI);
-        _weapon.onMagazinEvent.AddListener(UpdateMagazineUI);
+        _weapon.onMagazinEvent.AddListener(UpdateMagazineUI); 
     }
 
     private void SetupWeapon()
@@ -47,7 +48,7 @@ public class PlayerUI : MonoBehaviour
     {
         _magazineList = new List<GameObject>();
 
-        for (int i = 0; i < _weapon.CurrentMagazine; ++i)
+        for (int i = 0; i < _weapon.MaxMagazine; ++i)
         {
             GameObject _clone = Instantiate(_magazinPrefab);
             _clone.transform.SetParent(_magazineParnel);
@@ -62,7 +63,7 @@ public class PlayerUI : MonoBehaviour
         }
     }
 
-    private void UpdateMagazineUI(int _currentMagazine)
+        private void UpdateMagazineUI(int _currentMagazine)
     {
         // Áö±Ý Åº¾à ¼ö ¸¸Å­ È°¼ºÈ­
         for (int i = 0; i < _magazineList.Count; ++i)
