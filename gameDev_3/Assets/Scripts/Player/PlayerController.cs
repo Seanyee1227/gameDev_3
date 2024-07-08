@@ -105,6 +105,16 @@ public class PlayerController : MonoBehaviour
             _weapon.StopWeaponAction();
         }
 
+        // AimMode º¯°æ
+        if (Input.GetMouseButtonDown(1))
+        {
+            _weapon.StartWeaponAction(1);
+        }
+        else if (Input.GetMouseButtonUp(1))
+        {
+            _weapon.StopWeaponAction(1);
+        }
+
         if (Input.GetKey(_keyCodeReload))
         {
             _weapon.StartReload();

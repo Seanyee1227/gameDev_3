@@ -145,7 +145,7 @@ public class WeaponAssualtRifle : MonoBehaviour
 
         while (true)
         {
-            if (_audioSource.isPlaying == false && _anim.CurrentAnimation("Movement"))
+            if (_audioSource.isPlaying == false && _anim.CurrentAnimation("Movement") || _anim.CurrentAnimation("AimFire"))
             {
                 _isReload = false;
 
