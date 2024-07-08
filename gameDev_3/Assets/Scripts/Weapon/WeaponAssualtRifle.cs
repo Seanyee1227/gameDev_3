@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 [System.Serializable]
 public class AmmoEvent : UnityEngine.Events.UnityEvent<int, int> { }
@@ -36,8 +37,16 @@ public class WeaponAssualtRifle : MonoBehaviour
     [SerializeField]
     private WeaponSetting _weaponSetting; // 무기 설정
 
+    [Header("Aim UI")]
+    [SerializeField]
+    private Image _aimImage;
+
     private float _lastAttackTime = 0f; // 마지막 발사 시간 확인
     private bool _isReload = false; // 재장전 확인
+    private bool _isAttack = false; // 공격 여부
+    private bool _isModeChange = false; // 모드 변환
+    private float _defaultFov = 60f; // 기본 카메라
+    private float _AimFov = 30f; // Aim 모드의 카메라
 
     private AudioSource _audioSource;
     private PlayerAnimation _anim;
@@ -74,20 +83,25 @@ public class WeaponAssualtRifle : MonoBehaviour
         onAmmoEvent.Invoke(_weaponSetting.currentAmmo, _weaponSetting.maxAmmo);
 
         // 무기가 활성화 될 때 탄창 수 갱신
-        onMagazinEvent.Invoke(_weaponSetting.currentMagazin);  
+        onMagazinEvent.Invoke(_weaponSetting.currentMagazin);
+
+        ResetVarialbes();
     }
 
     public void StartWeaponAction(int _type = 0)
     {
-        if (_isReload == true)
-        {
-            return;
-        }
+        // 재장전 중에 공격 불가
+        if (_isReload == true) return;
 
+        // 모드 전환 중에 공격 불가
+        if (_isModeChange == true) return;
+       
+        // 사격
         if (_type == 0)
         {
             if (_weaponSetting.isAutoAttack == true)
             {
+                _isAttack = true;
                 StartCoroutine("OnAttackLoop");
             }
             else
@@ -95,12 +109,20 @@ public class WeaponAssualtRifle : MonoBehaviour
                 OnAttack();
             }
         }
+        else
+        {
+            // 공격 시 모드 전환 불가
+            if (_isAttack == true) return;
+
+            StartCoroutine("ModeChange");
+        }
     }
 
     public void StopWeaponAction(int _type = 0)
     {
         if (_type == 0)
         {
+            _isAttack = false;
             StopCoroutine("OnAttackLoop");
         }
     }
@@ -163,11 +185,13 @@ public class WeaponAssualtRifle : MonoBehaviour
             _weaponSetting.currentAmmo--;
             onAmmoEvent.Invoke(_weaponSetting.currentAmmo, _weaponSetting.maxAmmo);
 
-            // 총기 애니매이션 재생
-            _anim.Play("Fire", -1, 0);
+            // 총기 애니매이션 재생 ( Fire or AimFire)
+            //_anim.Play("Fire", -1, 0);
+            string _animation = _anim.AimModes == true ? "AimFire" : "Fire";
+            _anim.Play(_animation, -1, 0);
 
-            // 사격 이펙트 재생
-            StartCoroutine("FlashEffect");
+            // 사격 이펙트 재생 (default 모드일 때만)
+            if (_anim.AimModes == false) StartCoroutine("FlashEffect");
 
             // 사격 사운드 재생
             PlaySound(_audioClipFire);
@@ -228,6 +252,41 @@ public class WeaponAssualtRifle : MonoBehaviour
             _impactMemoryPool.SpawnImpact(_hit);
         }
         Debug.DrawRay(_bulletSpawnPoint.position, _attackDir * _weaponSetting.attackDistane, Color.blue);
+    }
+
+    private IEnumerator ModeChange()
+    {
+        float _current = 0f;
+        float _percent = 0f;
+        float _time = 0.35f;
+
+        _anim.AimModes = !_anim.AimModes;
+        _aimImage.enabled = !_aimImage.enabled;
+
+        float _start = _mainCamera.fieldOfView;
+        float _end = _anim.AimModes == true ? _AimFov : _defaultFov;
+
+        _isModeChange = true;
+
+        while (_percent < 1)
+        {
+            _current += Time.deltaTime;
+            _percent = _current / _time;
+
+            // 모드에 따라 시야 변경
+            _mainCamera.fieldOfView = Mathf.Lerp(_start, _end, _percent);
+
+            yield return null;
+        }
+
+        _isModeChange = false;
+    }
+
+    private void ResetVarialbes()
+    {
+        _isReload = false;
+        _isAttack = false;
+        _isModeChange = false;
     }
 
     private void PlaySound(AudioClip clip)

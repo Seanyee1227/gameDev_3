@@ -17,6 +17,12 @@ public class PlayerAnimation : MonoBehaviour
         get => _anim.GetFloat("MoveSpeed");
     }
 
+    public bool AimModes
+    {
+        set => _anim.SetBool("isAimMode", value);
+        get => _anim.GetBool("isAimMode");
+    }
+
     public void Play(string _stateName, int _layer, float _normalizedTime)
     {
         _anim.Play(_stateName, _layer, _normalizedTime);
@@ -26,6 +32,7 @@ public class PlayerAnimation : MonoBehaviour
     {
         _anim.SetTrigger("onReload");
     }
+
 
     public bool CurrentAnimation(string _name)
     {
