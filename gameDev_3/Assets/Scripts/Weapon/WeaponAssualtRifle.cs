@@ -20,6 +20,8 @@ public class WeaponAssualtRifle : MonoBehaviour
     [Header("Spawn Points")]
     [SerializeField]
     private Transform _casingSpawnPoint; // 탄피 생성 위치
+    [SerializeField]
+    private Transform _bulletSpawnPoint; // 총알 생성 위치
 
     [Header("Audio Clips")]
     [SerializeField]
@@ -40,6 +42,8 @@ public class WeaponAssualtRifle : MonoBehaviour
     private AudioSource _audioSource;
     private PlayerAnimation _anim;
     private CasingMemoryPool _memoryPool;
+    private ImpactMemoryPool _impactMemoryPool;
+    private Camera _mainCamera;
 
     // 외부에서 필요한 정보를 열람하기 위해 정의한 프로퍼티
     public WeaponName WeaponName => _weaponSetting.weaponName;
@@ -51,6 +55,8 @@ public class WeaponAssualtRifle : MonoBehaviour
         _audioSource = GetComponent<AudioSource>();
         _anim = GetComponentInParent<PlayerAnimation>();
         _memoryPool = GetComponent<CasingMemoryPool>();
+        _impactMemoryPool = GetComponent<ImpactMemoryPool>();
+        _mainCamera = Camera.main;
 
         // 탄약을 최대로 초기화
         _weaponSetting.currentAmmo = _weaponSetting.maxAmmo;
@@ -168,6 +174,9 @@ public class WeaponAssualtRifle : MonoBehaviour
 
             // 탄피 생성
             _memoryPool.SpawnCasing(_casingSpawnPoint.position, transform.right);
+
+            // 광선을 발사해 원하는 위치 공격
+            Ray();
         }
     }
 
@@ -188,6 +197,37 @@ public class WeaponAssualtRifle : MonoBehaviour
         StopWeaponAction();
 
         StartCoroutine("OnReload");
+    }
+
+    private void Ray()
+    {
+        Ray _ray;
+        RaycastHit _hit;
+        Vector3 _target = Vector3.zero;
+
+        // 화면의 중앙 좌표
+        _ray = _mainCamera.ViewportPointToRay(Vector2.one * 0.5f);
+
+        //공격 사거리 안에 있으면 _target이 광선이 부딫힌 위치
+        if (Physics.Raycast(_ray, out _hit, _weaponSetting.attackDistane))
+        {
+            _target = _hit.point;
+        }
+        // 공격 사거리 안에 없으면 _target은 최대 사거리
+        else
+        {
+            _target = _ray.origin + _ray.direction * _weaponSetting.attackDistane;
+        }
+        Debug.DrawRay(_ray.origin, _ray.direction * _weaponSetting.attackDistane, Color.red);
+
+        // _target을 목표로 설정하고, 총구를 시작점으로 하여 Ratcast  연산
+        Vector3 _attackDir = (_target - _bulletSpawnPoint.position).normalized;
+
+        if (Physics.Raycast(_bulletSpawnPoint.position, _attackDir, out _hit, _weaponSetting.attackDistane))
+        {
+            _impactMemoryPool.SpawnImpact(_hit);
+        }
+        Debug.DrawRay(_bulletSpawnPoint.position, _attackDir * _weaponSetting.attackDistane, Color.blue);
     }
 
     private void PlaySound(AudioClip clip)

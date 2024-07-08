@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public enum ImpactType { Normal = 0, Obstancle }
+public enum ImpactType { Normal = 0, Enemy, }
 
 public class ImpactMemoryPool : MonoBehaviour
 {
@@ -20,14 +20,14 @@ public class ImpactMemoryPool : MonoBehaviour
 
     public void SpawnImpact(RaycastHit _hit)
     {
-        // 부딫힌 오브젝트의 tag에 따라 다르게 처리
+        // 부딪힌 오브젝트의 tag에 따라 다르게 처리
         if (_hit.transform.CompareTag("Normal"))
         {
             OnSpawnImpact(ImpactType.Normal, _hit.point, Quaternion.LookRotation(_hit.normal));
         }
         else if (_hit.transform.CompareTag("Enemy"))
         {
-            OnSpawnImpact(ImpactType.Obstancle, _hit.point, Quaternion.LookRotation(_hit.normal));
+            OnSpawnImpact(ImpactType.Enemy, _hit.point, Quaternion.LookRotation(_hit.normal));
         }
 
     }

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Impact : MonoBehaviour
@@ -14,7 +12,7 @@ public class Impact : MonoBehaviour
 
     public void SetUp(MemoryPool _pool)
     {
-        _memoryPool = _pool;
+        _memoryPool = _pool;    
     }
 
     private void Update()
@@ -22,7 +20,10 @@ public class Impact : MonoBehaviour
         // 파티클이 재생 중이 아니라면 삭제
         if (_particleSystem.isPlaying == false)
         {
-            _memoryPool.DeactivePoolItem(gameObject);
+            if (_memoryPool != null)
+            {
+                _memoryPool.DeactivePoolItem(gameObject);
+            }
         }
     }
 }

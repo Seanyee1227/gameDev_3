@@ -24,7 +24,7 @@ public class PlayerAnimation : MonoBehaviour
 
     public void OnReload()
     {
-        _anim.SetTrigger("OnReload");
+        _anim.SetTrigger("onReload");
     }
 
     public bool CurrentAnimation(string _name)

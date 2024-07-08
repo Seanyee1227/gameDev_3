@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 64213105961615544}
   - component: {fileID: 5224722549411028254}
   m_Layer: 0
-  m_Name: normalimpact
+  m_Name: Normalimpact
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
