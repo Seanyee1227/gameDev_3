@@ -32,7 +32,7 @@ public class PlayerMove : MonoBehaviour
     {
         if (!_characterController.isGrounded)
         {
-            _moveForce.y += _gravity * Time.deltaTime;
+            _moveForce.y += _gravity * Time.deltaTime;  
         }
 
         _characterController.Move(_moveForce * Time.deltaTime);

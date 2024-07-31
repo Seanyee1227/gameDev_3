@@ -20,10 +20,7 @@ public class Impact : MonoBehaviour
         // 파티클이 재생 중이 아니라면 삭제
         if (_particleSystem.isPlaying == false)
         {
-            if (_memoryPool != null)
-            {
-                _memoryPool.DeactivePoolItem(gameObject);
-            }
+            _memoryPool.DeactivePoolItem(gameObject);
         }
     }
 }

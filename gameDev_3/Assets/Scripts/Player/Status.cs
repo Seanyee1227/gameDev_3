@@ -9,10 +9,7 @@ public class Status : MonoBehaviour
     private float _walkSpeed;
     [SerializeField]
     private float _runSpeed;
-    [SerializeField]
-    private float _slowSpeed;
 
     public float WalkSpeed => _walkSpeed;
     public float RunSpeed => _runSpeed;
-    public float SlowSpedd => _slowSpeed;
 }

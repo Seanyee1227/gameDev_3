@@ -32,7 +32,6 @@ public class WeaponAssualtRifle : MonoBehaviour
     [SerializeField]
     private AudioClip _audioClipReload; // 재장전 사운드
 
-
     [Header("Weapon Setting")]
     [SerializeField]
     private WeaponSetting _weaponSetting; // 무기 설정
@@ -56,22 +55,22 @@ public class WeaponAssualtRifle : MonoBehaviour
 
     // 외부에서 필요한 정보를 열람하기 위해 정의한 프로퍼티
     public WeaponName WeaponName => _weaponSetting.weaponName;
-    public int CurrentMagazine => _weaponSetting.currentMagazin;
-    public int MaxMagazine => _weaponSetting.maxMagazin;
+    public int CurrentMagazine => _weaponSetting.currentMagazine;
+    public int MaxMagazine => _weaponSetting.maxMagazine;
 
     private void Awake()
     {
         _audioSource = GetComponent<AudioSource>();
         _anim = GetComponentInParent<PlayerAnimation>();
         _memoryPool = GetComponent<CasingMemoryPool>();
-        _impactMemoryPool = GetComponent<ImpactMemoryPool>();
+        _impactMemoryPool = GetComponent<ImpactMemoryPool>();   
         _mainCamera = Camera.main;
 
         // 탄약을 최대로 초기화
         _weaponSetting.currentAmmo = _weaponSetting.maxAmmo;
 
         // 탄창 수를 최대로 초기화
-        _weaponSetting.currentMagazin = _weaponSetting.maxMagazin;
+        _weaponSetting.currentMagazine = _weaponSetting.maxMagazine;
     }
 
     private void OnEnable()
@@ -83,9 +82,9 @@ public class WeaponAssualtRifle : MonoBehaviour
         onAmmoEvent.Invoke(_weaponSetting.currentAmmo, _weaponSetting.maxAmmo);
 
         // 무기가 활성화 될 때 탄창 수 갱신
-        onMagazinEvent.Invoke(_weaponSetting.currentMagazin);
+        onMagazinEvent.Invoke(_weaponSetting.currentMagazine);
 
-        ResetVarialbes();
+        ResetVariables();
     }
 
     public void StartWeaponAction(int _type = 0)
@@ -95,7 +94,7 @@ public class WeaponAssualtRifle : MonoBehaviour
 
         // 모드 전환 중에 공격 불가
         if (_isModeChange == true) return;
-       
+
         // 사격
         if (_type == 0)
         {
@@ -143,20 +142,31 @@ public class WeaponAssualtRifle : MonoBehaviour
         _anim.OnReload();
         PlaySound(_audioClipReload);
 
+        bool _isAimMode = _anim.AimModes;
+        if (_isAimMode)
+        {
+            StartCoroutine("ModeChange");
+            yield return new WaitForSeconds(0.35f);
+        }
         while (true)
         {
-            if (_audioSource.isPlaying == false && _anim.CurrentAnimation("Movement") || _anim.CurrentAnimation("AimFire"))
+            if (_audioSource.isPlaying == false && _anim.CurrentAnimation("Movement"))
             {
                 _isReload = false;
 
-                // 현재 탄창 수를 감소 시키고, UI 업데이드
-                _weaponSetting.currentMagazin--;
-                onMagazinEvent.Invoke(_weaponSetting.currentMagazin);
+                // 현재 탄창 수를 1 감소시키고, 바뀐 탄창 정보를 Text UI에 업데이트
+                _weaponSetting.currentMagazine--;
+                onMagazinEvent.Invoke(_weaponSetting.currentMagazine);
 
-                // 재장전시 현재 탄수를 최대로 변경하고, UI 업데이트
+                // 현재 탄 수를 최대로 설정하고, 바뀐 탄 수 정보를 Text UI에 업데이트
                 _weaponSetting.currentAmmo = _weaponSetting.maxAmmo;
                 onAmmoEvent.Invoke(_weaponSetting.currentAmmo, _weaponSetting.maxAmmo);
 
+                if (_isAimMode)
+                {
+                    StartCoroutine(ModeChange()); // aim 모드로 다시 전환
+                    yield return new WaitForSeconds(0.35f); // 모드 전환이 완료될 때까지 기다림
+                }
                 yield break;
             }
             yield return null;
@@ -186,7 +196,6 @@ public class WeaponAssualtRifle : MonoBehaviour
             onAmmoEvent.Invoke(_weaponSetting.currentAmmo, _weaponSetting.maxAmmo);
 
             // 총기 애니매이션 재생 ( Fire or AimFire)
-            //_anim.Play("Fire", -1, 0);
             string _animation = _anim.AimModes == true ? "AimFire" : "Fire";
             _anim.Play(_animation, -1, 0);
 
@@ -213,45 +222,46 @@ public class WeaponAssualtRifle : MonoBehaviour
 
     public void StartReload()
     {
-        if (_isReload == true || _weaponSetting.currentMagazin <= 0)
+        if (_isReload == true || _weaponSetting.currentMagazine <= 0)
         {
             return;
         }
 
-        StopWeaponAction();
+        // 조준 상태를 해제
+        StartCoroutine(OnReload());
 
-        StartCoroutine("OnReload");
+        StopWeaponAction();
     }
 
     private void Ray()
     {
         Ray _ray;
         RaycastHit _hit;
-        Vector3 _target = Vector3.zero;
+        Vector3 _targetPoint = Vector3.zero;
 
         // 화면의 중앙 좌표
         _ray = _mainCamera.ViewportPointToRay(Vector2.one * 0.5f);
 
         //공격 사거리 안에 있으면 _target이 광선이 부딫힌 위치
-        if (Physics.Raycast(_ray, out _hit, _weaponSetting.attackDistane))
+        if (Physics.Raycast(_ray, out _hit, _weaponSetting.attackDistance))
         {
-            _target = _hit.point;
+            _targetPoint = _hit.point;
         }
         // 공격 사거리 안에 없으면 _target은 최대 사거리
         else
         {
-            _target = _ray.origin + _ray.direction * _weaponSetting.attackDistane;
+            _targetPoint = _ray.origin + _ray.direction * _weaponSetting.attackDistance;
         }
-        Debug.DrawRay(_ray.origin, _ray.direction * _weaponSetting.attackDistane, Color.red);
+        Debug.DrawRay(_ray.origin, _ray.direction * _weaponSetting.attackDistance, Color.red);
 
-        // _target을 목표로 설정하고, 총구를 시작점으로 하여 Ratcast  연산
-        Vector3 _attackDir = (_target - _bulletSpawnPoint.position).normalized;
+        // _target을 목표로 설정하고, 총구를 시작점으로 하여 Raycast  연산
+        Vector3 _attackDir = (_targetPoint - _bulletSpawnPoint.position).normalized;
 
-        if (Physics.Raycast(_bulletSpawnPoint.position, _attackDir, out _hit, _weaponSetting.attackDistane))
+        if (Physics.Raycast(_bulletSpawnPoint.position, _attackDir, out _hit, _weaponSetting.attackDistance))
         {
             _impactMemoryPool.SpawnImpact(_hit);
         }
-        Debug.DrawRay(_bulletSpawnPoint.position, _attackDir * _weaponSetting.attackDistane, Color.blue);
+        Debug.DrawRay(_bulletSpawnPoint.position, _attackDir * _weaponSetting.attackDistance, Color.blue);
     }
 
     private IEnumerator ModeChange()
@@ -266,8 +276,8 @@ public class WeaponAssualtRifle : MonoBehaviour
         float _start = _mainCamera.fieldOfView;
         float _end = _anim.AimModes == true ? _AimFov : _defaultFov;
 
-        _isModeChange = true;
-
+        _isModeChange = true;   
+            
         while (_percent < 1)
         {
             _current += Time.deltaTime;
@@ -282,7 +292,7 @@ public class WeaponAssualtRifle : MonoBehaviour
         _isModeChange = false;
     }
 
-    private void ResetVarialbes()
+    private void ResetVariables()
     {
         _isReload = false;
         _isAttack = false;

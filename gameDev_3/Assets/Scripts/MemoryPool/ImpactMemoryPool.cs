@@ -12,9 +12,9 @@ public class ImpactMemoryPool : MonoBehaviour
     {
         // 피격 이펙트가 여러 종류면 종류별로 메모리풀 생성
         _memoryPool = new MemoryPool[_impactPrefab.Length];
-        for (int i = 0; i < _impactPrefab.Length; i++)
+        for (int i = 0; i < _impactPrefab.Length; ++i)
         {
-            _memoryPool[i] = new MemoryPool(_impactPrefab[i]);
+            _memoryPool[i] = new MemoryPool(_impactPrefab[i]);  
         }
     }
 
@@ -23,10 +23,12 @@ public class ImpactMemoryPool : MonoBehaviour
         // 부딪힌 오브젝트의 tag에 따라 다르게 처리
         if (_hit.transform.CompareTag("Normal"))
         {
+            Debug.Log("Normal");
             OnSpawnImpact(ImpactType.Normal, _hit.point, Quaternion.LookRotation(_hit.normal));
         }
-        else if (_hit.transform.CompareTag("Enemy"))
+        else if (_hit.transform.CompareTag("Enemy")) 
         {
+            Debug.Log("Enemy");
             OnSpawnImpact(ImpactType.Enemy, _hit.point, Quaternion.LookRotation(_hit.normal));
         }
 
