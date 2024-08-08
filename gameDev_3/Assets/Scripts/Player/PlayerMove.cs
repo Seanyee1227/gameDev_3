@@ -15,6 +15,11 @@ public class PlayerMove : MonoBehaviour
     [SerializeField]
     private float _gravity;
 
+    [SerializeField]
+    private bool _isMove;
+    [SerializeField]
+    private bool _isJump;
+
     private CharacterController _characterController;
 
     public float MoveSpeed
@@ -40,16 +45,23 @@ public class PlayerMove : MonoBehaviour
 
     public void MoveTo(Vector3 _dir)
     {
+       // _isMove = true;
+        //Debug.Log(_isMove);
+
         _dir = transform.rotation * new Vector3(_dir.x, 0, _dir.z);
 
         _moveForce = new Vector3(_dir.x * _moveSpeed, _moveForce.y, _dir.z * _moveSpeed);
+        //_isMove = false;
     }
 
     public void Jump()
     {
         if (_characterController.isGrounded)
         {
+            _isJump = true;
+            Debug.Log(_isJump);
             _moveForce.y = _jumpForce;
         }
+        _isJump = false;
     }
 }

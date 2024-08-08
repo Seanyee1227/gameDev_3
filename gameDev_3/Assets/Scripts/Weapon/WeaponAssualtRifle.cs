@@ -260,6 +260,11 @@ public class WeaponAssualtRifle : MonoBehaviour
         if (Physics.Raycast(_bulletSpawnPoint.position, _attackDir, out _hit, _weaponSetting.attackDistance))
         {
             _impactMemoryPool.SpawnImpact(_hit);
+
+            if (_hit.transform.CompareTag("Enemy"))
+            {
+                _hit.transform.GetComponent<EnemyHealth>().TakeDamage(_weaponSetting.damage);
+            }
         }
         Debug.DrawRay(_bulletSpawnPoint.position, _attackDir * _weaponSetting.attackDistance, Color.blue);
     }
