@@ -831,7 +831,7 @@ MonoBehaviour:
   _moveSpeed: 3
   _slowMoveSpeed: 0
   _jumpForce: 10
-  _gravity: -40
+  _gravity: -35
   _isMove: 0
   _isJump: 0
 --- !u!114 &408289335
@@ -3697,12 +3697,12 @@ PrefabInstance:
     - target: {fileID: 3440438560384856590, guid: c46e75279b43ea745a168448ec83e53f,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 5.6398125
+      value: 10.31
       objectReference: {fileID: 0}
     - target: {fileID: 3440438560384856590, guid: c46e75279b43ea745a168448ec83e53f,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3440438560384856590, guid: c46e75279b43ea745a168448ec83e53f,
         type: 3}
@@ -3712,7 +3712,7 @@ PrefabInstance:
     - target: {fileID: 3440438560384856590, guid: c46e75279b43ea745a168448ec83e53f,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3440438560384856590, guid: c46e75279b43ea745a168448ec83e53f,
         type: 3}
@@ -3727,7 +3727,7 @@ PrefabInstance:
     - target: {fileID: 3440438560384856590, guid: c46e75279b43ea745a168448ec83e53f,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: 180
       objectReference: {fileID: 0}
     - target: {fileID: 3440438560384856590, guid: c46e75279b43ea745a168448ec83e53f,
         type: 3}

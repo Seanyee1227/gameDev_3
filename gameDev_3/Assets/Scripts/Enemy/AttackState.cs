@@ -2,35 +2,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class IdleState : StateMachineBehaviour
+public class AttackState : StateMachineBehaviour
 {
-    private float _timer;
-    Transform _player;
-    float _chaseRange = 8f;
+    Transform _target;
 
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        _timer = 0f;
-        _player = GameObject.FindGameObjectWithTag("Player").transform;
+        _target = GameObject.FindGameObjectWithTag("Player").transform;
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        _timer += Time.deltaTime;
-        float _distance = Vector3.Distance(_player.position, animator.transform.position);
+        animator.transform.LookAt(_target);
+        float _distance = Vector3.Distance(_target.position, animator.transform.position);
 
-        if (_distance < _chaseRange)
+        if (_distance > 4f)
         {
-            animator.SetBool("Chasing", true);
+            animator.SetBool("Attacking", false);
         }
-
-        if (_timer > 5f)
-        {
-            animator.SetBool("Patrolling", true);
-        }
-        
     }
 
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state

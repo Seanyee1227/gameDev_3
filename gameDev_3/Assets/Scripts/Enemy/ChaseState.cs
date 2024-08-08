@@ -1,65 +1,41 @@
-using UnityEngine.AI;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
-public class PatrolState : StateMachineBehaviour
+public class ChaseState : StateMachineBehaviour
 {
-    private float _timer;
-    float _chaseRange = 8f;
-    Transform _player;
-    List<Transform> _wayPoints =  new List<Transform>();
     NavMeshAgent _agent;
+    Transform _target;
 
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         _agent = animator.GetComponent<NavMeshAgent>();
-        _agent.speed = 1.5f;
-        _timer = 0f;
-        GameObject _go = GameObject.FindGameObjectWithTag("WayPoints");
-        _player = GameObject.FindGameObjectWithTag("Player").transform;
-
-        foreach(Transform t in _go.transform)
-        {
-            _wayPoints.Add(t);
-        }
-        
-        if (_wayPoints.Count > 0)
-        {
-            _agent.SetDestination(_wayPoints[Random.Range(0, _wayPoints.Count)].position);
-        }
-        else
-        {
-            Debug.Log("¿¡·¯");
-        }
+        _target = GameObject.FindGameObjectWithTag("Player").transform;
+        _agent.speed = 3.5f;
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if (_agent.remainingDistance <= _agent.stoppingDistance)
-        {
-            _agent.SetDestination(_wayPoints[Random.Range(0, _wayPoints.Count)].position);
-        }
-    
-        _timer += Time.deltaTime;
-        float _distance = Vector3.Distance(_player.position, animator.transform.position);
+        _agent.SetDestination(_target.position);
+        float _distance = Vector3.Distance(_target.position, animator.transform.position);
 
-        if (_distance < _chaseRange)
+        if (_distance > 15)
         {
-            animator.SetBool("Chasing", true);
+            animator.SetBool("Chasing", false);
         }
-
-        if (_timer > 10f)
+        if (_distance < 3f)
         {
-            animator.SetBool("Patrolling", false);
+            animator.SetBool("Attacking", true);
         }
     }
 
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        _agent.SetDestination(_agent.transform.position);
+        _agent.SetDestination(animator.transform.position);
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()
